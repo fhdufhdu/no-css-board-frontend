@@ -1,13 +1,24 @@
 <html>
 
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.2/markdown-it.js" integrity="sha512-2LtYcLGnCbAWz9nDIrfG2pHFiFu9n+3oGecQlzLuYsLgen/oxiYscGWnDST9J9EZanlsQkDD0ZP2n/6peDuALQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
     <script src="index.js"></script>
+    <script>
+        const md = markdownit({html: true})
+        const result = md.renderInline('<div>test<div>');
+        console.log(result)
+    </script>
 </head>
 
 <body>
     <button onclick="window.location.href = 'page/login.html';">로그인/회원가입</button>
+    <br>
+    <br>
+    <img src="/static/ggalggi.png" width="200px">
     <h1>NO CSS Board</h1>
     <p>깔끼하고 맛꿀마한 NO CSS 게시판</p>
+    <p>CSS쓰면 아주 그냥 절단임</p>
     <hr>
     <div>
         <a>

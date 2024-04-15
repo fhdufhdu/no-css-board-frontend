@@ -1,3 +1,5 @@
+axios.defaults.withCredentials = true;
+
 function getPasswordAndCheck() {
   const password = document.querySelector("#signup-password").value;
   const passwordCheck = document.querySelector("#signup-password-check").value;
@@ -6,7 +8,7 @@ function getPasswordAndCheck() {
 }
 
 function isValidPassword(password, passwordCheck) {
-  return password === passwordCheck
+  return password === passwordCheck;
 }
 
 function getCheckSentence(condition) {
@@ -29,59 +31,47 @@ function getSignupIdAndPassword() {
   return [id, password];
 }
 
-function requestLogin(id, password){
-  fetch("http://localhost:8080/user/login", {
-    method: "POST",
-    body: JSON.stringify({ id, password }),
-    headers: {
-      "Content-Type": "application/json;charset=utf-8;,",
-    },
-  }).then((response) => {
-    if (response.status !== 200) {
-      alert("아이디와 비밀번호를 다시 확인해주세요.");
-    } else {
-      alert(`환영합니다. ${id}님`);
-      window.location.href = "/index.html";
-    }
-  });
-}
-
-function requestSignUp(id, password) {
-  fetch("http://localhost:8080/user/signup", {
-      method: "POST",
-      body: JSON.stringify({ id, password }),
-      headers: {
-        "Content-Type": "application/json;charset=utf-8;,",
-      },
-    }).then((response) => {
-      if (response.status === 409) {
-        alert("이미 존재하는 아이디입니다.")
-      } else if (response.status !== 200) {
-        alert("에러 발생, 회원가입을 다시 시도해주세요.")
+function requestLogin(id, password) {
+  axios
+    .post("http://localhost:8080/user/login", { id, password })
+    .then((response) => {
+      if (response.status !== 200) {
+        alert("아이디와 비밀번호를 다시 확인해주세요.");
       } else {
-        requestLogin(id, password)
+        console.log(response);
+        alert(`환영합니다. ${id}님`);
+        // window.location.href = "/index.html";
       }
     });
 }
 
+function requestSignUp(id, password) {
+  axios.post("http://localhost:8080/user/signup", { id, password }).then((response) => {
+    if (response.status === 409) {
+      alert("이미 존재하는 아이디입니다.");
+    } else if (response.status !== 200) {
+      alert("에러 발생, 회원가입을 다시 시도해주세요.");
+    } else {
+      requestLogin(id, password);
+    }
+  });
+}
+
 function requestCheckExistence(id) {
-  fetch(`http://localhost:8080/user/${id}/existence`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8;,",
-      },
-    }).then((response) => {
+  axios.get(`http://localhost:8080/user/${id}/existence`)
+    .then((response) => {
       if (response.status !== 200) {
-        alert("에러 발생, 다시 시도해주세요.")
-        return
+        alert("에러 발생, 다시 시도해주세요.");
+        return;
       }
-      return response.json()
-    }).then((body) => {
-      if (!body) return
-      if (body.exist){
-        alert("이미 존재하는 아이디입니다.")
+      return response.json();
+    })
+    .then((body) => {
+      if (!body) return;
+      if (body.exist) {
+        alert("이미 존재하는 아이디입니다.");
       } else {
-        alert("사용 가능한 아이디입니다.")
+        alert("사용 가능한 아이디입니다.");
       }
     });
 }
@@ -91,34 +81,34 @@ window.addEventListener("DOMContentLoaded", () => {
   const signUpButton = document.querySelector("#signup-button");
   const signupPasswordCheck = document.querySelector("#signup-password-check");
   const samePassword = document.querySelector("#same-password");
-  const idExistenceButton = document.querySelector('#id-existence')
+  const idExistenceButton = document.querySelector("#id-existence");
 
   signupPasswordCheck.addEventListener("keyup", (e) => {
     const [password, passwordCheck] = getPasswordAndCheck();
-    const isValid = isValidPassword(password, passwordCheck)
+    const isValid = isValidPassword(password, passwordCheck);
     samePassword.innerHTML = getCheckSentence(isValid);
   });
 
   loginButton.addEventListener("click", (e) => {
     const [id, password] = getLoginIdAndPassword();
 
-    requestLogin(id, password)
+    requestLogin(id, password);
   });
 
   signUpButton.addEventListener("click", (e) => {
-    const [id, password] = getSignupIdAndPassword()
+    const [id, password] = getSignupIdAndPassword();
     const [_, passwordCheck] = getPasswordAndCheck();
-    const isValid = isValidPassword(password, passwordCheck)
+    const isValid = isValidPassword(password, passwordCheck);
     if (!isValid) {
-      alert("password를 다시 확인해주세요.")
-      return
+      alert("password를 다시 확인해주세요.");
+      return;
     }
-    
-    requestSignUp(id, password)
+
+    requestSignUp(id, password);
   });
-  
+
   idExistenceButton.addEventListener("click", (e) => {
-    const [id, _] = getSignupIdAndPassword()
-    requestCheckExistence(id)
-  })
+    const [id, _] = getSignupIdAndPassword();
+    requestCheckExistence(id);
+  });
 });
