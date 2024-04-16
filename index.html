@@ -4,11 +4,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.2/markdown-it.js" integrity="sha512-2LtYcLGnCbAWz9nDIrfG2pHFiFu9n+3oGecQlzLuYsLgen/oxiYscGWnDST9J9EZanlsQkDD0ZP2n/6peDuALQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
     <script src="index.js"></script>
-    <script>
-        const md = markdownit({html: true})
-        const result = md.renderInline('<div>test<div>');
-        console.log(result)
-    </script>
 </head>
 
 <body>
@@ -20,25 +15,9 @@
     <p>깔끼하고 맛꿀마한 NO CSS 게시판</p>
     <p>CSS쓰면 아주 그냥 절단임</p>
     <hr>
-    <div>
-        <a>
-            <h4>게시글 제목</h4>
-            <small>작성자: fhdufhdu</small><br>
-            <small>작성일자: 2024/04/14</small> - <small>수정일자: 2024/04/14</small>
-            <p>게시글 내용 30자 미리보기</p>
-            <button>수정</button>
-            <button>삭제</button>
-            <hr>
-        </a>
-        <a>
-            <h4>게시글 제목</h4>
-            <small>작성자: fhdufhdu</small><br>
-            <small>작성일자: 2024/04/14</small> - <small>수정일자: 2024/04/14</small>
-            <p>게시글 내용 30자 미리보기</p>
-            <button>수정</button>
-            <button>삭제</button>
-            <hr>
-        </a>
+    <button>게시글 작성</button>
+    <hr>
+    <div id="posts">
     </div>
 </body>
 

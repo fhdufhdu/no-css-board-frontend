@@ -40,7 +40,8 @@ function requestLogin(id, password) {
       } else {
         console.log(response);
         alert(`환영합니다. ${id}님`);
-        // window.location.href = "/index.html";
+        window.localStorage.setItem('userId', id)
+        window.location.href = "/index.html";
       }
     });
 }
@@ -90,8 +91,8 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   loginButton.addEventListener("click", (e) => {
+    console.log(e)
     const [id, password] = getLoginIdAndPassword();
-
     requestLogin(id, password);
   });
 
