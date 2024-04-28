@@ -1,5 +1,6 @@
 import markdownit from "markdown-it";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
+import { useGetMyDetail } from "../query/LoginQuery";
 import {
   DeletePostStatus,
   useDeletePostQuery,
@@ -11,7 +12,9 @@ const md = markdownit({ html: true });
 export const PostPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { isLoading, error, data } = usePostDetailQuery(Number(id));
+  const myDetail = useGetMyDetail();
+  const postDetail = usePostDetailQuery(Number(id));
+  // const commentDetails = useCommentDetailsQuery(Number(id));
   const { mutate } = useDeletePostQuery({
     onSuccess: (data: DeletePostStatus) => {
       if (data === DeletePostStatus.SUCCESS) {
@@ -24,20 +27,53 @@ export const PostPage = () => {
       else alert("알 수 없는 오류가 발생했습니다.");
     },
   });
-
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error 발생</p>;
-  if (data && data.isDeleted) return <p>삭제된 게시글입니다.</p>;
   return (
     <>
-      <button onClick={() => mutate({ id: Number(id) })}>삭제</button>
-      <h1>{data?.title}</h1>
-      <p>작성일: {data?.createdAt}</p>
-      <p>{data?.updatedAt ? `수정일: ${data?.updatedAt}` : ""}</p>
-      <hr />
-      <div
-        dangerouslySetInnerHTML={{ __html: md.render(data?.content || "") }}
-      ></div>
+      <div className="flex flex-col h-full">
+        <ul role="menubar" className="grow-0">
+          <li
+            role="menuitem"
+            tabIndex={0}
+            onClick={() =>
+              myDetail.data?.body.id === postDetail.data?.userId
+                ? mutate({ id: Number(id) })
+                : alert("작성자만 삭제할 수 있습니다.")
+            }
+          >
+            삭제
+          </li>
+        </ul>
+        <div className="window-body has-space grow overflow-y-auto has-scrollbar">
+          {postDetail.isLoading ? (
+            <p>Loading...</p>
+          ) : postDetail.error ? (
+            <p>Error 발생</p>
+          ) : postDetail.data && !postDetail.data.exist ? (
+            <p>존재하지 않거나, 삭제된 게시글입니다.</p>
+          ) : (
+            <>
+              <h4>{postDetail.data?.title}</h4>
+              <p className="text-sm">작성일: {postDetail.data?.createdAt}</p>
+              <p className="text-sm">
+                {postDetail.data?.updatedAt
+                  ? `수정일: ${postDetail.data?.updatedAt}`
+                  : ""}
+              </p>
+              <hr />
+              <article
+                role="tabpanel"
+                className="text-[1rem]"
+                dangerouslySetInnerHTML={{
+                  __html: md.render(postDetail.data?.content || ""),
+                }}
+              ></article>
+            </>
+          )}
+          {/* <hr /> */}
+          {/* <h4 className="text-base">댓글</h4> */}
+          {/* <p>{commentDetails.data?.body.comments[0].content}</p> */}
+        </div>
+      </div>
     </>
   );
 };

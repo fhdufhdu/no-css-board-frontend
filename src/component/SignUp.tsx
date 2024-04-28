@@ -53,66 +53,68 @@ export const SignUp = () => {
 
   return (
     <>
-      <h3>회원가입</h3>
-      <div>
-        ID:{" "}
-        <input
-          type="text"
-          value={id}
-          onChange={(event) => {
-            setCheckStatus(CheckStatus.WAIT_CHECK);
-            setId(event.currentTarget.value);
-          }}
-        ></input>{" "}
+      <article role="tabpanel">
+        <div className="field-row-stacked w-64">
+          <label>ID</label>
+          <input
+            type="text"
+            value={id}
+            onChange={(event) => {
+              setCheckStatus(CheckStatus.WAIT_CHECK);
+              setId(event.currentTarget.value);
+            }}
+          ></input>
+          <button
+            onClick={() => {
+              setCheckStatus(CheckStatus.BUTTON_CLICKED);
+              idExistence.refetch();
+            }}
+          >
+            중복체크
+          </button>
+          {checkStatus === CheckStatus.WAIT_CHECK
+            ? ""
+            : checkStatus === CheckStatus.CHECKING
+            ? " 중복체크 중..."
+            : idExistence.data
+            ? " 이미 존재하는 아이디입니다."
+            : " 사용 가능한 아이디입니다."}
+        </div>
+        <div className="field-row-stacked w-64">
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => {
+              setPassword(event.target.value);
+            }}
+          ></input>
+        </div>
+        <div className="field-row-stacked w-64">
+          <label>Password Check</label>
+          <input
+            type="password"
+            value={checkPassword}
+            onChange={(event) => setCheckPassword(event.currentTarget.value)}
+          ></input>
+          <div>
+            {password && checkPassword
+              ? password === checkPassword
+                ? "- 비밀번호가 일치합니다."
+                : "- 비밀번호가 일치하지 않습니다."
+              : ""}
+          </div>
+        </div>
+      </article>
+      <section className="field-row justify-end">
         <button
           onClick={() => {
-            setCheckStatus(CheckStatus.BUTTON_CLICKED);
-            idExistence.refetch();
+            signUpQuery.mutate({ id, password });
           }}
         >
-          중복체크
+          회원가입
         </button>
-        {checkStatus === CheckStatus.WAIT_CHECK
-          ? ""
-          : checkStatus === CheckStatus.CHECKING
-          ? " 중복체크 중..."
-          : idExistence.data
-          ? " 이미 존재하는 아이디입니다."
-          : " 사용 가능한 아이디입니다."}
-      </div>
-      <br />
-      <div>
-        PW:{" "}
-        <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.currentTarget.value)}
-        ></input>
-      </div>
-      <br />
-      <div>
-        PW Check:{" "}
-        <input
-          type="password"
-          value={checkPassword}
-          onChange={(event) => setCheckPassword(event.currentTarget.value)}
-        ></input>
-      </div>
-      <div>
-        {password && checkPassword
-          ? password === checkPassword
-            ? "- 비밀번호가 일치합니다."
-            : "- 비밀번호가 일치하지 않습니다."
-          : ""}
-      </div>
-      <br />
-      <button
-        onClick={() => {
-          signUpQuery.mutate({ id, password });
-        }}
-      >
-        회원가입
-      </button>
+      </section>
     </>
   );
 };

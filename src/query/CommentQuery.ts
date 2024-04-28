@@ -1,37 +1,63 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { isoToYearMonthDay } from "./MainQuery";
+import { CommonResponse } from "./response.dto";
 
-export interface PostDetail {
-  id: number;
-  userId: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  updatedAt?: string;
-  exist: boolean;
+export interface CommentDetails {
+  comments: {
+    id: number;
+    userId: string;
+    content: string;
+    createdAt: string;
+    updatedAt?: string;
+  }[];
+  number: number;
+  totalPages: number;
 }
 
-export const usePostDetailQuery = (id: number) => {
-  const getPostDetail = async (id: number): Promise<PostDetail> => {
+export const useCommentDetailsQuery = (postId: number) => {
+  const getCommentDetails = async (
+    postId: number
+  ): Promise<CommonResponse<CommentDetails>> => {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_API}/board/post/${id}`
+      `${process.env.REACT_APP_BACKEND_API}/board/post/${postId}/comments`,
+      {
+        params: {
+          page_number: 0,
+          page_size: 10,
+        },
+      }
     );
-    return {
-      id: response.data.id,
-      userId: response.data.user_id,
-      title: response.data.title,
-      content: response.data.content,
-      createdAt: isoToYearMonthDay(response.data.created_at),
-      updatedAt:
-        response.data.updated_at && isoToYearMonthDay(response.data.updated_at),
-      exist: response.status !== 404,
+    const a = {
+      status: response.status,
+      body: {
+        comments: response.data.comments.map(
+          (d: {
+            id: number;
+            user_id: string;
+            content: string;
+            created_at: string;
+            updated_at: string;
+          }) => {
+            return {
+              id: d.id,
+              userId: d.user_id,
+              content: d.content,
+              createdAt: isoToYearMonthDay(d.created_at),
+              updatedAt: d.updated_at && isoToYearMonthDay(d.updated_at),
+            };
+          }
+        ),
+        number: response.data.number,
+        totalPages: response.data.totalPages,
+      },
     };
+    return a;
   };
 
   return useQuery({
-    queryKey: ["post", "detail", id],
-    queryFn: () => getPostDetail(id),
+    queryKey: ["comment", "details", postId],
+    queryFn: () => getCommentDetails(postId),
   });
 };
 
