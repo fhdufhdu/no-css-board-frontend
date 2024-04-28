@@ -29,7 +29,9 @@ export const MainPage = () => {
               게시글 작성
             </li>
           ) : (
-            "로그인시 게시글 작성이 가능합니다."
+            <li role="menuitem" tabIndex={1}>
+              로그인시 게시글 작성이 가능합니다.
+            </li>
           )}
         </ul>
         <div className="window-body has-space grow overflow-y-auto has-scrollbar">
