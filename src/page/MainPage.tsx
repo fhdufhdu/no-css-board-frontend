@@ -36,7 +36,7 @@ export const MainPage = () => {
               게시글 작성
             </li>
           ) : (
-            <li role="menuitem" tabIndex={1}>
+            <li role="menuitem" tabIndex={1} aria-disabled="true">
               로그인시 게시글 작성이 가능합니다.
             </li>
           )}

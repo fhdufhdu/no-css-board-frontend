@@ -2,7 +2,6 @@ import markdownit from "markdown-it";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useCommentDetailsQuery, usePostComment } from "../query/CommentQuery";
-import { useGetMyDetail } from "../query/LoginQuery";
 import {
   DeletePostStatus,
   useDeletePostQuery,
@@ -10,6 +9,7 @@ import {
 } from "../query/PostQuery";
 
 import { Comment } from "../component/Comment";
+import { useGetMyDetail } from "../query/LoginQuery";
 
 const md = markdownit({ html: true });
 
@@ -70,11 +70,12 @@ export const PostPage = () => {
           <li
             role="menuitem"
             tabIndex={0}
-            onClick={() =>
+            aria-disabled={
               myDetail.data?.body.id === postDetail.data?.userId
-                ? deletePost.mutate({ id: Number(id) })
-                : alert("작성자만 삭제할 수 있습니다.")
+                ? undefined
+                : "true"
             }
+            onClick={() => deletePost.mutate({ id: Number(id) })}
           >
             삭제
           </li>
