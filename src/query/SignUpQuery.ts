@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import sha256 from 'sha256';
 
 export enum SignUpStatus {
   ALREADY_EXIST, SUCCESS, UNKNOWN_ERROR
@@ -46,10 +47,11 @@ export const useSignUpQuery = (options: { onSuccess?: (data: SignUpStatus) => vo
   const queryClient = useQueryClient()
 
   const signUp = async (id: string, password: string): Promise<SignUpStatus> => {
+    const hashedPassword = sha256(password)
     const response = await axios
       .post(
         `${process.env.REACT_APP_BACKEND_API}/user/signup`,
-        { id, password }
+        { id, password: hashedPassword }
       )
     const status = response.status
 

@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import sha256 from 'sha256';
+
 import { CommonResponse } from "./response.dto";
 
 export enum LoginStatus {
@@ -17,9 +19,10 @@ export const useLoginQuery = (options: {
     id: string,
     password: string
   ): Promise<CommonResponse<object>> => {
+    const hashedPassword = sha256(password)
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_API}/user/login`,
-      { id, password }
+      { id, password: hashedPassword }
     );
     return { status: response.status, body: response.data };
   };
