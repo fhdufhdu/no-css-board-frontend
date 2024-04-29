@@ -1,5 +1,5 @@
 import markdownit from "markdown-it";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useCommentDetailsQuery, usePostComment } from "../query/CommentQuery";
 import {
@@ -10,6 +10,7 @@ import {
 
 import { Comment } from "../component/Comment";
 import { useGetMyDetail } from "../query/LoginQuery";
+import "../css/window-body-pre.css";
 
 const md = markdownit({ html: true });
 
@@ -18,7 +19,6 @@ export const PostPage = () => {
   const { id } = useParams();
   const myDetail = useGetMyDetail();
   const postDetail = usePostDetailQuery(Number(id));
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const commentDetails = useCommentDetailsQuery(Number(id));
 
   const [newComment, setNewComment] = useState("");
@@ -50,19 +50,6 @@ export const PostPage = () => {
     },
   });
 
-  useEffect(() => {
-    if (iframeRef.current && postDetail.data?.content) {
-      const iframeDoc = iframeRef.current.contentWindow?.document;
-      console.log(md.render(postDetail.data?.content || ""));
-      iframeDoc?.open();
-      iframeDoc?.write(md.render(postDetail.data?.content || ""));
-      iframeDoc?.close();
-      if (iframeDoc?.body) {
-        const height = iframeDoc?.body?.scrollHeight;
-        iframeRef.current.style.height = `${height + 1}px`;
-      }
-    }
-  }, [postDetail.data?.content]);
   return (
     <>
       <div className="flex flex-col h-full">
@@ -100,7 +87,12 @@ export const PostPage = () => {
                     ? `수정일: ${postDetail.data?.updatedAt}`
                     : ""}
                 </p>
-                <iframe className="mt-2 bg-white h-0" ref={iframeRef}></iframe>
+                <div
+                  className="mt-2 bg-white w-auto block markdown-body p-4"
+                  dangerouslySetInnerHTML={{
+                    __html: md.render(postDetail.data?.content || ""),
+                  }}
+                ></div>
               </>
             )}
             <h4 className="text-base mt-3">

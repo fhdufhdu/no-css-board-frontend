@@ -64,7 +64,7 @@ export const useCommentDetailsQuery = (postId: number) => {
     queryFn: ({ pageParam }) => getCommentDetails(postId, pageParam),
     initialPageParam: 0,
     getNextPageParam: (prevPage) => {
-      return prevPage.body.number + 1 === prevPage.body.totalPages ? undefined : prevPage.body.number + 1;
+      return prevPage.body.number + 1 >= prevPage.body.totalPages ? undefined : prevPage.body.number + 1;
     }
 
   });

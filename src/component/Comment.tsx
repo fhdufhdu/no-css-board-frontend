@@ -1,5 +1,5 @@
 import markdownit from "markdown-it";
-import { useEffect, useRef } from "react";
+import "../css/window-body-pre.css";
 import { CommentDetail, useDeleteComment } from "../query/CommentQuery";
 import { useGetMyDetail } from "../query/LoginQuery";
 
@@ -13,7 +13,6 @@ export const Comment = ({
   postId: number;
 }) => {
   // const navigate = useNavigate();
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const myDetail = useGetMyDetail();
   const deleteComment = useDeleteComment({
     onSuccess: (response) => {
@@ -29,18 +28,7 @@ export const Comment = ({
       }
     },
   });
-  useEffect(() => {
-    if (iframeRef.current && comment.content) {
-      const iframeDoc = iframeRef.current.contentWindow?.document;
-      iframeDoc?.open();
-      iframeDoc?.write(md.render(comment.content || ""));
-      iframeDoc?.close();
-      if (iframeDoc?.body) {
-        const height = iframeDoc?.body?.scrollHeight;
-        iframeRef.current.style.height = `${height + 1}px`;
-      }
-    }
-  }, [comment.content]);
+
   return (
     <>
       <div className="flex flex-col mt-2">
@@ -61,7 +49,12 @@ export const Comment = ({
             ""
           )}
         </div>
-        <iframe className="mt-1 h-0 bg-white" ref={iframeRef}></iframe>
+        <div
+          className="mt-1 bg-white markdown-body p-4"
+          dangerouslySetInnerHTML={{
+            __html: md.render(md.render(comment.content || "")),
+          }}
+        ></div>
         <hr className="mt-3 border-stone-400" />
       </div>
     </>

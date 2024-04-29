@@ -54,7 +54,7 @@ export const usePostSummariesQuery = () => {
     queryFn: getPostSummaries,
     initialPageParam: 0,
     getNextPageParam: (prevPage) => {
-      return prevPage.number + 1 === prevPage.totalPages ? undefined : prevPage.number + 1;
+      return prevPage.number + 1 >= prevPage.totalPages ? undefined : prevPage.number + 1;
     }
   })
 }
