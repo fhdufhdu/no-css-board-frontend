@@ -1,16 +1,23 @@
-import { useState } from "react";
+import { Fragment, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 import { useGetMyDetail } from "../query/LoginQuery";
 import { usePostSummariesQuery } from "../query/MainQuery";
-import window7 from "../static/window7.png";
+import windows7 from "../static/windows7.png";
 
 export const MainPage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [currPage, setCurrPage] = useState(0);
+  // const [postSummaries, setPostSummaries] = useState<PostSummary[]>([]); // postSummaries.data.posts[
   const navigate = useNavigate();
+  const [observerRef, inView] = useInView();
 
-  const postSummaries = usePostSummariesQuery(currPage);
+  const postSummaries = usePostSummariesQuery();
   const myDetail = useGetMyDetail();
+
+  useEffect(() => {
+    if (inView && postSummaries.hasNextPage) {
+      postSummaries.fetchNextPage();
+    }
+  }, [inView]);
 
   return (
     <>
@@ -35,9 +42,9 @@ export const MainPage = () => {
           )}
         </ul>
         <div className="window-body has-space grow overflow-y-auto has-scrollbar">
-          <img src={window7} className="w-64" />
+          <img src={windows7} className="w-64" />
           <div role="tooltip" className="w-80">
-            그때... 그 시절...
+            Windows 7 감성을 살린 게시판입니다!
           </div>
           <table className="border-separate border-spacing-y-2 table-auto w-full text-center mt-3">
             <thead className="text-base">
@@ -57,26 +64,31 @@ export const MainPage = () => {
               </tr>
             </thead>
             <tbody className="text-sm">
-              {postSummaries.isPending ? (
-                <p>Loading...</p>
-              ) : postSummaries.error ? (
-                <p>Error 발생</p>
-              ) : (
-                postSummaries.data.posts.map((post) => {
-                  return (
-                    <tr key={post.id}>
-                      <td>{post.id}</td>
-                      <td>{post.userId}</td>
-                      <td>
-                        <a href={`/post/${post.id}`}>{post.title}</a>
-                      </td>
-                      <td>{post.createdAt}</td>
-                    </tr>
-                  );
-                })
-              )}
+              {postSummaries.isPending
+                ? "Loading..."
+                : postSummaries.error
+                ? "Error 발생"
+                : postSummaries.data.pages.map((page, i) => {
+                    return (
+                      <Fragment key={i}>
+                        {page.posts.map((post) => {
+                          return (
+                            <tr key={post.id}>
+                              <td>{post.id}</td>
+                              <td>{post.userId}</td>
+                              <td>
+                                <a href={`/post/${post.id}`}>{post.title}</a>
+                              </td>
+                              <td>{post.createdAt}</td>
+                            </tr>
+                          );
+                        })}
+                      </Fragment>
+                    );
+                  })}
             </tbody>
           </table>
+          <div ref={observerRef}></div>
         </div>
       </div>
     </>
